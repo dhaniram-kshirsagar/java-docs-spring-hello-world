@@ -23,4 +23,9 @@ public class DemoApplication extends SpringBootServletInitializer {
 	String getQ() {
 		return "This is my Q!";
 	}
+
+	@RequestMapping("/qp")
+	String getQP() {
+		return "This is my QP!";
+	}
 }
