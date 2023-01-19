@@ -18,4 +18,9 @@ public class DemoApplication extends SpringBootServletInitializer {
 	String sayHello() {
 		return "Hello WebQSample by Dhani!";
 	}
+
+	@RequestMapping("/q")
+	String sayHello() {
+		return "This is my Q!";
+	}
 }
