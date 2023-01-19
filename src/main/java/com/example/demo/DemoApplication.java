@@ -20,7 +20,7 @@ public class DemoApplication extends SpringBootServletInitializer {
 	}
 
 	@RequestMapping("/q")
-	String sayHello() {
+	String getQ() {
 		return "This is my Q!";
 	}
 }
