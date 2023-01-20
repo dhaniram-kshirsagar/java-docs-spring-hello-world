@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 // Include the following imports to use queue APIs
-// Include the following imports to use queue APIs.
-import com.microsoft.azure.storage.*;
-import com.microsoft.azure.storage.queue.*;
+import com.azure.core.util.*;
+import com.azure.storage.queue.*;
+import com.azure.storage.queue.models.*;
 
 @SpringBootApplication
 @RestController
@@ -37,54 +37,29 @@ public class DemoApplication extends SpringBootServletInitializer {
 
 	@RequestMapping("/qp")
 	String getQP() {
-		try
-		{
-			// Retrieve storage account from connection-string.
-
-			CloudStorageAccount storageAccount =
-			CloudStorageAccount.parse(storageConnectionString);
-
-			// Create the queue client.
-			CloudQueueClient queueClient = storageAccount.createCloudQueueClient();
-
-			// Retrieve a reference to a queue.
-			CloudQueue queue = queueClient.getQueueReference("myqueue");
-
-			// Create the queue if it doesn't already exist.
-			queue.createIfNotExists();
-		}
-		catch (Exception e)
-		{
-			// Output the stack trace.
-			e.printStackTrace();
-		}
-		return "This is my QP!";
+		String message = getMsgFromgQueue();
+		return message;
 	}
 
-	private addMsgToQ(){
-		try
-		{
-			// Retrieve storage account from connection-string.
-			CloudStorageAccount storageAccount =
-			CloudStorageAccount.parse(storageConnectionString);
-
-			// Create the queue client.
-			CloudQueueClient queueClient = storageAccount.createCloudQueueClient();
-
-			// Retrieve a reference to a queue.
-			CloudQueue queue = queueClient.getQueueReference("myqueue");
-
-			// Create the queue if it doesn't already exist.
-			queue.createIfNotExists();
-
-			// Create a message and add it to the queue.
-			CloudQueueMessage message = new CloudQueueMessage("Hello, World");
-			queue.addMessage(message);
+	private String getMsgFromgQueue(){
+		try{
+			// Instantiate a QueueClient which will be
+			// used to create and manipulate the queue
+			QueueClient queueClient = new QueueClientBuilder()
+										.connectionString(storageConnectionString)
+										.queueName("webqarchi")
+										.buildClient();
+	
+			// Peek at the first message
+			PeekedMessageItem peekedMessageItem = queueClient.peekMessage();
+			System.out.println("Peeked message: " + peekedMessageItem.getMessageText());
+			return peekedMessageItem.getMessageText();
 		}
-		catch (Exception e)
-		{
-			// Output the stack trace.
+		catch (QueueStorageException e){
+			// Output the exception message and stack trace
+			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
+		return "Failed to read from queue";
 	}
 }
